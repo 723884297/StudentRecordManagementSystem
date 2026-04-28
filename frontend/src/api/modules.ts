@@ -1,0 +1,109 @@
+import api from './index'
+
+// ===== 仪表盘 =====
+export const dashboardApi = {
+  getStats: () => api.get('/dashboard/stats'),
+}
+
+// ===== 认证 =====
+export const authApi = {
+  login: (data: { username: string; password: string }) => api.post('/auth/login', data),
+  getUserInfo: () => api.get('/auth/info'),
+}
+
+// ===== 用户管理 =====
+export const userApi = {
+  getById: (id: number) => api.get(`/user/${id}`),
+  getList: (params: any) => api.get('/user/list', { params }),
+  add: (data: any) => api.post('/user', data),
+  update: (data: any) => api.put('/user', data),
+  delete: (id: number) => api.delete(`/user/${id}`),
+  updateStatus: (id: number, status: number) => api.put(`/user/${id}/status/${status}`),
+  resetPassword: (id: number, newPassword: string) => api.put(`/user/${id}/resetPassword`, null, { params: { newPassword } }),
+}
+
+// ===== 角色管理 =====
+export const roleApi = {
+  getById: (id: number) => api.get(`/role/${id}`),
+  getList: () => api.get('/role/list'),
+  getByUserId: (userId: number) => api.get(`/role/user/${userId}`),
+  add: (data: any) => api.post('/role', data),
+  update: (data: any) => api.put('/role', data),
+  delete: (id: number) => api.delete(`/role/${id}`),
+  assignRoles: (userId: number, roleIds: number[]) => api.post(`/role/assign/${userId}`, roleIds),
+}
+
+// ===== 权限管理 =====
+export const permissionApi = {
+  getList: () => api.get('/permission/list'),
+  getByUserId: (userId: number) => api.get(`/permission/user/${userId}`),
+  add: (data: any) => api.post('/permission', data),
+  update: (data: any) => api.put('/permission', data),
+  delete: (id: number) => api.delete(`/permission/${id}`),
+  assignPermissions: (roleId: number, permIds: number[]) => api.post(`/permission/assign/${roleId}`, permIds),
+}
+
+// ===== 学院管理 =====
+export const collegeApi = {
+  getById: (id: number) => api.get(`/college/${id}`),
+  getAll: () => api.get('/college/all'),
+  getList: (params?: any) => api.get('/college/list', { params }),
+  add: (data: any) => api.post('/college', data),
+  update: (data: any) => api.put('/college', data),
+  delete: (id: number) => api.delete(`/college/${id}`),
+}
+
+// ===== 专业管理 =====
+export const majorApi = {
+  getById: (id: number) => api.get(`/major/${id}`),
+  getList: (params?: any) => api.get('/major/list', { params }),
+  getByCollegeId: (collegeId: number) => api.get(`/major/college/${collegeId}`),
+  add: (data: any) => api.post('/major', data),
+  update: (data: any) => api.put('/major', data),
+  delete: (id: number) => api.delete(`/major/${id}`),
+}
+
+// ===== 班级管理 =====
+export const classApi = {
+  getById: (id: number) => api.get(`/class/${id}`),
+  getList: (params?: any) => api.get('/class/list', { params }),
+  getByMajorId: (majorId: number) => api.get(`/class/major/${majorId}`),
+  add: (data: any) => api.post('/class', data),
+  update: (data: any) => api.put('/class', data),
+  delete: (id: number) => api.delete(`/class/${id}`),
+}
+
+// ===== 学生管理 =====
+export const studentApi = {
+  getById: (id: number) => api.get(`/student/${id}`),
+  getByStudentNo: (no: string) => api.get(`/student/no/${no}`),
+  getDetail: (id: number) => api.get(`/student/${id}/detail`),
+  getList: (params: any) => api.get('/student/list', { params }),
+  add: (data: any) => api.post('/student', data),
+  update: (data: any) => api.put('/student', data),
+  delete: (id: number) => api.delete(`/student/${id}`),
+  updateStatus: (id: number, status: string) => api.put(`/student/${id}/status`, null, { params: { status } }),
+  updateDetail: (id: number, data: any) => api.put(`/student/${id}/detail`, data),
+}
+
+// ===== 档案管理 =====
+export const archiveApi = {
+  getCategoryList: () => api.get('/archive/category/list'),
+  addCategory: (data: any) => api.post('/archive/category', data),
+  updateCategory: (data: any) => api.put('/archive/category', data),
+  deleteCategory: (id: number) => api.delete(`/archive/category/${id}`),
+  getFileById: (id: number) => api.get(`/archive/file/${id}`),
+  getFilesByStudentId: (studentId: number) => api.get(`/archive/file/student/${studentId}`),
+  getFileList: (params: any) => api.get('/archive/file/list', { params }),
+  addFile: (data: any) => api.post('/archive/file', data),
+  deleteFile: (id: number) => api.delete(`/archive/file/${id}`),
+  auditFile: (id: number, params: any) => api.put(`/archive/file/${id}/audit`, null, { params }),
+}
+
+// ===== 通知管理 =====
+export const notificationApi = {
+  getList: (params: any) => api.get('/notification/list', { params }),
+  countUnread: (targetUserId: number) => api.get('/notification/unread/count', { params: { targetUserId } }),
+  markAsRead: (id: number) => api.put(`/notification/${id}/read`),
+  markAllAsRead: (targetUserId: number) => api.put('/notification/readAll', null, { params: { targetUserId } }),
+}

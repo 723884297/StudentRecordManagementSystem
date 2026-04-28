@@ -13,4 +13,6 @@ public interface SysOperationLogMapper {
                                      @Param("operation") String operation);
 
     int insert(SysOperationLog log);
+
+    List<SysOperationLog> selectRecent(@Param("limit") int limit);
 }

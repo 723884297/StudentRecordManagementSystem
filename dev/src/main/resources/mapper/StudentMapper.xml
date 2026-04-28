@@ -90,4 +90,12 @@
     <update id="updateStatus">
         UPDATE student SET status = #{status} WHERE pk_student = #{pkStudent}
     </update>
+
+    <select id="countTotal" resultType="int">
+        SELECT COUNT(*) FROM student
+    </select>
+
+    <select id="countByStatus" resultType="java.util.Map">
+        SELECT status AS label, COUNT(*) AS count FROM student GROUP BY status
+    </select>
 </mapper>

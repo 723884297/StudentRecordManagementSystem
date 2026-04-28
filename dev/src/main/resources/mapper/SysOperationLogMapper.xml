@@ -33,4 +33,12 @@
         INSERT INTO sys_operation_log (user_id, operation, module, description, request_params, ip)
         VALUES (#{userId}, #{operation}, #{module}, #{description}, #{requestParams}, #{ip})
     </insert>
+
+    <select id="selectRecent" resultMap="BaseResultMap">
+        SELECT l.*, u.real_name AS user_name
+        FROM sys_operation_log l
+        LEFT JOIN sys_user u ON l.user_id = u.pk_user
+        ORDER BY l.create_time DESC
+        LIMIT #{limit}
+    </select>
 </mapper>

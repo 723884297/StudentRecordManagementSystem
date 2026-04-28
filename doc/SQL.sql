@@ -4,6 +4,10 @@
 --       为档案文件增加审核状态，补充索引及部分字段扩展。
 -- =============================================
 
+-- 创建数据库
+CREATE DATABASE IF NOT EXISTS `StudentRecordManagementSystem` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `StudentRecordManagementSystem`;
+
 -- 1. 用户表
 CREATE TABLE `sys_user` (
   `pk_user` BIGINT NOT NULL AUTO_INCREMENT COMMENT '用户ID',

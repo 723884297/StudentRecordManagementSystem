@@ -24,4 +24,8 @@ public interface ArchiveFileMapper {
 
     int updateStatus(@Param("pkArchiveFile") Long pkArchiveFile, @Param("status") Integer status,
                      @Param("auditUserId") Long auditUserId, @Param("auditRemark") String auditRemark);
+
+    int countTotal();
+
+    int countByStatus(@Param("status") Integer status);
 }

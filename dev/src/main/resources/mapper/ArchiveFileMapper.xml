@@ -68,4 +68,12 @@
         SET status = #{status}, audit_user_id = #{auditUserId}, audit_time = NOW(), audit_remark = #{auditRemark}
         WHERE pk_archive_file = #{pkArchiveFile}
     </update>
+
+    <select id="countTotal" resultType="int">
+        SELECT COUNT(*) FROM archive_file
+    </select>
+
+    <select id="countByStatus" resultType="int">
+        SELECT COUNT(*) FROM archive_file WHERE status = #{status}
+    </select>
 </mapper>

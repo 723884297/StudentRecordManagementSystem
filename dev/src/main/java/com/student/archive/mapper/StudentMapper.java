@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface StudentMapper {
@@ -26,4 +27,8 @@ public interface StudentMapper {
     int deleteById(@Param("pkStudent") Long pkStudent);
 
     int updateStatus(@Param("pkStudent") Long pkStudent, @Param("status") String status);
+
+    int countTotal();
+
+    List<Map<String, Object>> countByStatus();
 }
