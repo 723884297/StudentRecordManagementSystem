@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.ArchiveCategoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.ArchiveCategory">
+        <id column="pk_category" property="pkCategory"/>
+        <result column="category_name" property="categoryName"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="is_required" property="isRequired"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM archive_category WHERE pk_category = #{pkCategory}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM archive_category ORDER BY sort_order
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkCategory">
+        INSERT INTO archive_category (category_name, sort_order, is_required)
+        VALUES (#{categoryName}, #{sortOrder}, #{isRequired})
+    </insert>
+
+    <update id="update">
+        UPDATE archive_category
+        <set>
+            <if test="categoryName != null">category_name = #{categoryName},</if>
+            <if test="sortOrder != null">sort_order = #{sortOrder},</if>
+            <if test="isRequired != null">is_required = #{isRequired},</if>
+        </set>
+        WHERE pk_category = #{pkCategory}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM archive_category WHERE pk_category = #{pkCategory}
+    </delete>
+</mapper>

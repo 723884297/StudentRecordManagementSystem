@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.StudentDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.StudentDetail">
+        <id column="pk_student_detail" property="pkStudentDetail"/>
+        <result column="student_id" property="studentId"/>
+        <result column="nation" property="nation"/>
+        <result column="political_status" property="politicalStatus"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="home_address" property="homeAddress"/>
+        <result column="emergency_contact" property="emergencyContact"/>
+        <result column="emergency_phone" property="emergencyPhone"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM student_detail WHERE student_id = #{studentId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkStudentDetail">
+        INSERT INTO student_detail (student_id, nation, political_status, phone, email,
+            home_address, emergency_contact, emergency_phone, remark)
+        VALUES (#{studentId}, #{nation}, #{politicalStatus}, #{phone}, #{email},
+            #{homeAddress}, #{emergencyContact}, #{emergencyPhone}, #{remark})
+    </insert>
+
+    <update id="update">
+        UPDATE student_detail
+        <set>
+            <if test="nation != null">nation = #{nation},</if>
+            <if test="politicalStatus != null">political_status = #{politicalStatus},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="email != null">email = #{email},</if>
+            <if test="homeAddress != null">home_address = #{homeAddress},</if>
+            <if test="emergencyContact != null">emergency_contact = #{emergencyContact},</if>
+            <if test="emergencyPhone != null">emergency_phone = #{emergencyPhone},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </set>
+        WHERE pk_student_detail = #{pkStudentDetail}
+    </update>
+
+    <delete id="deleteByStudentId">
+        DELETE FROM student_detail WHERE student_id = #{studentId}
+    </delete>
+</mapper>

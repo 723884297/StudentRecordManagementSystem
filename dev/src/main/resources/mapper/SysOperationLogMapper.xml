@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.SysOperationLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.SysOperationLog">
+        <id column="pk_log" property="pkLog"/>
+        <result column="user_id" property="userId"/>
+        <result column="operation" property="operation"/>
+        <result column="module" property="module"/>
+        <result column="description" property="description"/>
+        <result column="request_params" property="requestParams"/>
+        <result column="ip" property="ip"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT * FROM sys_operation_log
+        <where>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="module != null and module != ''">
+                AND module = #{module}
+            </if>
+            <if test="operation != null and operation != ''">
+                AND operation = #{operation}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkLog">
+        INSERT INTO sys_operation_log (user_id, operation, module, description, request_params, ip)
+        VALUES (#{userId}, #{operation}, #{module}, #{description}, #{requestParams}, #{ip})
+    </insert>
+</mapper>

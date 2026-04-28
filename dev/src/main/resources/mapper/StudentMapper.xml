@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.StudentMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.Student">
+        <id column="pk_student" property="pkStudent"/>
+        <result column="user_id" property="userId"/>
+        <result column="student_no" property="studentNo"/>
+        <result column="name" property="name"/>
+        <result column="gender" property="gender"/>
+        <result column="birth_date" property="birthDate"/>
+        <result column="id_card" property="idCard"/>
+        <result column="enrollment_year" property="enrollmentYear"/>
+        <result column="school_length" property="schoolLength"/>
+        <result column="college_id" property="collegeId"/>
+        <result column="major_id" property="majorId"/>
+        <result column="class_id" property="classId"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM student WHERE pk_student = #{pkStudent}
+    </select>
+
+    <select id="selectByStudentNo" resultMap="BaseResultMap">
+        SELECT * FROM student WHERE student_no = #{studentNo}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        SELECT * FROM student WHERE user_id = #{userId}
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT * FROM student
+        <where>
+            <if test="studentNo != null and studentNo != ''">
+                AND student_no LIKE CONCAT('%', #{studentNo}, '%')
+            </if>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="collegeId != null">
+                AND college_id = #{collegeId}
+            </if>
+            <if test="majorId != null">
+                AND major_id = #{majorId}
+            </if>
+            <if test="classId != null">
+                AND class_id = #{classId}
+            </if>
+            <if test="status != null and status != ''">
+                AND status = #{status}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkStudent">
+        INSERT INTO student (user_id, student_no, name, gender, birth_date, id_card,
+            enrollment_year, school_length, college_id, major_id, class_id, status)
+        VALUES (#{userId}, #{studentNo}, #{name}, #{gender}, #{birthDate}, #{idCard},
+            #{enrollmentYear}, #{schoolLength}, #{collegeId}, #{majorId}, #{classId}, #{status})
+    </insert>
+
+    <update id="update">
+        UPDATE student
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="studentNo != null">student_no = #{studentNo},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birthDate != null">birth_date = #{birthDate},</if>
+            <if test="idCard != null">id_card = #{idCard},</if>
+            <if test="enrollmentYear != null">enrollment_year = #{enrollmentYear},</if>
+            <if test="schoolLength != null">school_length = #{schoolLength},</if>
+            <if test="collegeId != null">college_id = #{collegeId},</if>
+            <if test="majorId != null">major_id = #{majorId},</if>
+            <if test="classId != null">class_id = #{classId},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE pk_student = #{pkStudent}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM student WHERE pk_student = #{pkStudent}
+    </delete>
+
+    <update id="updateStatus">
+        UPDATE student SET status = #{status} WHERE pk_student = #{pkStudent}
+    </update>
+</mapper>
