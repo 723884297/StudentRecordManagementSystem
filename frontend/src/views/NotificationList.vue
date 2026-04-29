@@ -2,74 +2,105 @@
   <div class="page">
     <div class="page-toolbar">
       <div class="flex gap-8">
-        <select v-model="typeFilter" class="form-select" style="width:140px;padding:7px 12px;font-size:13px">
-          <option value="">全部类型</option>
-          <option value="system">系统通知</option>
-          <option value="archive">档案通知</option>
-          <option value="audit">审核通知</option>
-        </select>
-        <select v-model="readFilter" class="form-select" style="width:140px;padding:7px 12px;font-size:13px">
+        <select v-model="readFilter" class="form-select" style="width:140px;padding:7px 12px;font-size:13px" @change="loadData">
           <option value="">全部状态</option>
-          <option value="0">未读</option>
-          <option value="1">已读</option>
+          <option :value="0">未读</option>
+          <option :value="1">已读</option>
         </select>
       </div>
       <button class="btn btn-ghost btn-sm" @click="markAllRead">全部标为已读</button>
     </div>
     <div class="notification-list">
-      <div v-for="item in filteredList" :key="item.pkNotification" :class="['notification-item', { unread: !item.isRead }]" @click="item.isRead = 1">
+      <div v-for="item in list" :key="item.pkNotification" :class="['notification-item', { unread: !item.isRead }]" @click="markRead(item)">
         <div class="notification-icon">
-          <svg v-if="item.type === 'system'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <svg v-else-if="item.type === 'archive'" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </div>
         <div class="notification-body">
           <div class="notification-header">
-            <span class="notification-title">{{ item.title }}</span>
-            <span :class="['badge', typeBadgeClass(item.type)]">{{ typeLabel(item.type) }}</span>
+            <span class="notification-title">{{ item.title || '系统通知' }}</span>
           </div>
           <p class="notification-content">{{ item.content }}</p>
-          <span class="notification-time">{{ item.createTime }}</span>
+          <span class="notification-time">{{ formatDate(item.createTime) }}</span>
         </div>
         <div v-if="!item.isRead" class="notification-dot"></div>
       </div>
-      <div v-if="!filteredList.length" class="empty-state">
+      <div v-if="!list.length && !loading" class="empty-state">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-quaternary)" stroke-width="1.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <p style="color:var(--text-quaternary);font-size:13px;margin-top:12px">暂无通知</p>
+      </div>
+    </div>
+    <div class="pagination" v-if="total > pageSize">
+      <span class="text-caption">共 {{ total }} 条</span>
+      <div class="pagination-pages">
+        <button class="pagination-btn" :disabled="pageNum <= 1" @click="pageNum--; loadData()">上一页</button>
+        <span class="pagination-info">{{ pageNum }} / {{ totalPages }}</span>
+        <button class="pagination-btn" :disabled="pageNum >= totalPages" @click="pageNum++; loadData()">下一页</button>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { notificationApi } from '../api/modules'
+import { useUserStore } from '../stores/user'
+
+const userStore = useUserStore()
 const list = ref<any[]>([])
-const typeFilter = ref('')
-const readFilter = ref('')
-const filteredList = computed(() => {
-  return list.value.filter(i => {
-    const matchType = !typeFilter.value || i.type === typeFilter.value
-    const matchRead = readFilter.value === '' || i.isRead === Number(readFilter.value)
-    return matchType && matchRead
-  })
-})
-function typeLabel(type: string) {
-  return { system: '系统', archive: '档案', audit: '审核' }[type] || type
+const total = ref(0)
+const pageNum = ref(1)
+const pageSize = ref(20)
+const readFilter = ref('' as any)
+const loading = ref(true)
+
+const totalPages = computed(() => Math.ceil(total.value / pageSize.value) || 1)
+
+function formatDate(dateStr: string) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  const now = new Date()
+  const diff = now.getTime() - d.getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return '刚刚'
+  if (mins < 60) return `${mins}分钟前`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}小时前`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days}天前`
+  return d.toLocaleDateString('zh-CN')
 }
-function typeBadgeClass(type: string) {
-  return { system: 'badge-info', archive: 'badge-neutral', audit: 'badge-warning' }[type] || 'badge-neutral'
+
+async function loadData() {
+  loading.value = true
+  try {
+    const userId = userStore.userInfo?.userId
+    if (!userId) return
+    const params: any = { pageNum: pageNum.value, pageSize: pageSize.value, targetUserId: userId }
+    if (readFilter.value !== '') params.isRead = readFilter.value
+    const res: any = await notificationApi.getList(params)
+    list.value = res.data?.list || []
+    total.value = res.data?.total || 0
+  } catch (e) { console.error('加载通知失败', e) }
+  finally { loading.value = false }
 }
-function markAllRead() {
-  list.value.forEach(i => i.isRead = 1)
+
+async function markRead(item: any) {
+  if (item.isRead) return
+  try {
+    await notificationApi.markAsRead(item.pkNotification)
+    item.isRead = 1
+  } catch (e) { /* ignore */ }
 }
-onMounted(() => {
-  list.value = [
-    { pkNotification: 1, title: '系统维护通知', content: '系统将于今晚22:00-23:00进行维护升级，届时将暂停服务。', type: 'system', isRead: 0, createTime: '2024-06-15 10:30' },
-    { pkNotification: 2, title: '档案审核通过', content: '您提交的学历证明文件已通过审核。', type: 'audit', isRead: 0, createTime: '2024-06-14 15:20' },
-    { pkNotification: 3, title: '新档案上传提醒', content: '张三上传了成绩单档案，请及时审核。', type: 'archive', isRead: 1, createTime: '2024-06-13 09:15' },
-    { pkNotification: 4, title: '密码修改成功', content: '您的账号密码已成功修改，如非本人操作请及时联系管理员。', type: 'system', isRead: 1, createTime: '2024-06-12 18:45' },
-    { pkNotification: 5, title: '档案审核被退回', content: '您提交的身份证复印件因清晰度不足被退回，请重新上传。', type: 'audit', isRead: 0, createTime: '2024-06-11 14:00' },
-  ]
-})
+
+async function markAllRead() {
+  const userId = userStore.userInfo?.userId
+  if (!userId) return
+  try {
+    await notificationApi.markAllAsRead(userId)
+    list.value.forEach(i => i.isRead = 1)
+  } catch (e: any) { alert(e.message || '操作失败') }
+}
+
+onMounted(loadData)
 </script>
 <style scoped>
 .page { display: flex; flex-direction: column; gap: 16px; }
@@ -91,4 +122,5 @@ onMounted(() => {
 .notification-time { font-size: 12px; color: var(--text-quaternary); margin-top: 6px; display: inline-block; }
 .notification-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-violet); flex-shrink: 0; margin-top: 6px; }
 .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 0; }
+.pagination-info { font-size: 13px; color: var(--text-tertiary); padding: 0 8px; }
 </style>

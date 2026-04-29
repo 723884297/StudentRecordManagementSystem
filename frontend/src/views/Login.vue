@@ -93,9 +93,18 @@ async function handleLogin() {
     userStore.setUserInfo({
       userId: data.userId,
       username: data.username,
-      realName: data.realName
+      realName: data.realName,
+      roles: data.roles || []
     })
-    router.push('/dashboard')
+    // 根据角色跳转不同首页
+    const roles: string[] = data.roles || []
+    if (roles.includes('student')) {
+      router.push('/student/profile')
+    } else if (roles.includes('counselor') || roles.includes('archive_manager')) {
+      router.push('/teacher/dashboard')
+    } else {
+      router.push('/dashboard')
+    }
   } catch (e: any) {
     const code = e.code
     const msg = e.message || '登录失败'

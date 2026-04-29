@@ -25,6 +25,11 @@ public class StudentController {
         return Result.success(studentService.getByStudentNo(studentNo));
     }
 
+    @GetMapping("/user/{userId}")
+    public Result<Student> getByUserId(@PathVariable("userId") Long userId) {
+        return Result.success(studentService.getByUserId(userId));
+    }
+
     @GetMapping("/{id}/detail")
     public Result<StudentDetail> getDetail(@PathVariable("id") Long id) {
         return Result.success(studentService.getDetail(id));

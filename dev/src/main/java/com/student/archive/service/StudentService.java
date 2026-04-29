@@ -10,6 +10,8 @@ public interface StudentService {
 
     Student getByStudentNo(String studentNo);
 
+    Student getByUserId(Long userId);
+
     StudentDetail getDetail(Long studentId);
 
     PageResult<Student> getList(int pageNum, int pageSize, String studentNo, String name,

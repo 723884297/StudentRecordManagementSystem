@@ -2,7 +2,9 @@ package com.student.archive.controller;
 
 import com.student.archive.common.BusinessException;
 import com.student.archive.common.Result;
+import com.student.archive.entity.SysRole;
 import com.student.archive.entity.SysUser;
+import com.student.archive.service.SysRoleService;
 import com.student.archive.service.SysUserService;
 import com.student.archive.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,6 +24,7 @@ import java.util.Map;
 public class AuthController {
 
     private final SysUserService sysUserService;
+    private final SysRoleService sysRoleService;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
@@ -58,12 +62,17 @@ public class AuthController {
         // 生成 Token
         String token = jwtUtil.generateToken(user.getPkUser(), user.getUsername());
 
+        // 查询用户角色
+        List<SysRole> roles = sysRoleService.getRolesByUserId(user.getPkUser());
+        List<String> roleCodes = roles.stream().map(SysRole::getRoleCode).toList();
+
         // 返回用户信息和 Token
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);
         data.put("userId", user.getPkUser());
         data.put("username", user.getUsername());
         data.put("realName", user.getRealName());
+        data.put("roles", roleCodes);
         return Result.success("登录成功", data);
     }
 
@@ -78,11 +87,16 @@ public class AuthController {
         if (user == null) {
             throw new BusinessException("用户不存在");
         }
+        // 查询用户角色
+        List<SysRole> roles = sysRoleService.getRolesByUserId(userId);
+        List<String> roleCodes = roles.stream().map(SysRole::getRoleCode).toList();
+
         Map<String, Object> data = new HashMap<>();
         data.put("userId", user.getPkUser());
         data.put("username", user.getUsername());
         data.put("realName", user.getRealName());
         data.put("status", user.getStatus());
+        data.put("roles", roleCodes);
         return Result.success(data);
     }
 }

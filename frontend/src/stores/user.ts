@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export interface UserInfo {
   userId: number
   username: string
   realName: string
+  roles: string[]
 }
 
 export const useUserStore = defineStore('user', () => {
@@ -15,6 +16,14 @@ export const useUserStore = defineStore('user', () => {
       return stored ? JSON.parse(stored) : null
     } catch { return null }
   })())
+
+  // 角色判断计算属性
+  const isAdmin = computed(() => userInfo.value?.roles?.includes('admin') ?? false)
+  const isStudent = computed(() => userInfo.value?.roles?.includes('student') ?? false)
+  const isTeacher = computed(() => {
+    const roles = userInfo.value?.roles || []
+    return roles.includes('counselor') || roles.includes('archive_manager')
+  })
 
   function setToken(t: string) {
     token.value = t
@@ -33,5 +42,5 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('userInfo')
   }
 
-  return { token, userInfo, setToken, setUserInfo, logout }
+  return { token, userInfo, isAdmin, isStudent, isTeacher, setToken, setUserInfo, logout }
 })

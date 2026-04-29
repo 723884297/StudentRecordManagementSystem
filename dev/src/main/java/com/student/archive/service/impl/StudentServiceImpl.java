@@ -33,6 +33,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Student getByUserId(Long userId) {
+        return studentMapper.selectByUserId(userId);
+    }
+
+    @Override
     public StudentDetail getDetail(Long studentId) {
         return studentDetailMapper.selectByStudentId(studentId);
     }

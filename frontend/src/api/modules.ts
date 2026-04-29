@@ -77,6 +77,7 @@ export const classApi = {
 export const studentApi = {
   getById: (id: number) => api.get(`/student/${id}`),
   getByStudentNo: (no: string) => api.get(`/student/no/${no}`),
+  getByUserId: (userId: number) => api.get(`/student/user/${userId}`),
   getDetail: (id: number) => api.get(`/student/${id}/detail`),
   getList: (params: any) => api.get('/student/list', { params }),
   add: (data: any) => api.post('/student', data),
@@ -106,4 +107,26 @@ export const notificationApi = {
   countUnread: (targetUserId: number) => api.get('/notification/unread/count', { params: { targetUserId } }),
   markAsRead: (id: number) => api.put(`/notification/${id}/read`),
   markAllAsRead: (targetUserId: number) => api.put('/notification/readAll', null, { params: { targetUserId } }),
+}
+
+// ===== 成绩管理 =====
+export const gradeApi = {
+  getById: (id: number) => api.get(`/grade/${id}`),
+  getByStudentId: (studentId: number) => api.get(`/grade/student/${studentId}`),
+  getList: (params: any) => api.get('/grade/list', { params }),
+  add: (data: any) => api.post('/grade', data),
+  batchAdd: (data: any[]) => api.post('/grade/batch', data),
+  update: (data: any) => api.put('/grade', data),
+  delete: (id: number) => api.delete(`/grade/${id}`),
+}
+
+// ===== 奖项管理 =====
+export const awardApi = {
+  getById: (id: number) => api.get(`/award/${id}`),
+  getByStudentId: (studentId: number) => api.get(`/award/student/${studentId}`),
+  getList: (params: any) => api.get('/award/list', { params }),
+  add: (data: any) => api.post('/award', data),
+  batchAdd: (data: any[]) => api.post('/award/batch', data),
+  update: (data: any) => api.put('/award', data),
+  delete: (id: number) => api.delete(`/award/${id}`),
 }
