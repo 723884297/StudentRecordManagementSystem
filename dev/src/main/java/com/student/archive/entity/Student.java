@@ -26,4 +26,9 @@ public class Student {
     private String status;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+
+    // 关联名称（非数据库字段，JOIN查询填充）
+    private String collegeName;
+    private String majorName;
+    private String className;
 }

@@ -139,10 +139,11 @@ async function handleLogin() {
 .login-card {
   width: 100%;
   max-width: 380px;
-  background: var(--surface-02);
+  background: var(--bg-panel);
   border: 1px solid var(--border-standard);
   border-radius: var(--radius-panel);
   padding: 40px 32px;
+  box-shadow: var(--shadow-elevated);
 }
 
 .login-header {
@@ -196,27 +197,27 @@ async function handleLogin() {
 
 .error-input {
   color: var(--text-tertiary);
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--border-subtle);
+  background: var(--surface-03);
+  border: 1px solid var(--border-standard);
 }
 
 .error-account,
 .error-password {
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.08);
-  border: 1px solid rgba(248, 113, 113, 0.15);
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.15);
 }
 
 .error-disabled {
-  color: #fb923c;
-  background: rgba(251, 146, 60, 0.08);
-  border: 1px solid rgba(251, 146, 60, 0.15);
+  color: #c2410c;
+  background: rgba(194, 65, 12, 0.06);
+  border: 1px solid rgba(194, 65, 12, 0.15);
 }
 
 .error-server {
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.08);
-  border: 1px solid rgba(251, 191, 36, 0.15);
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.06);
+  border: 1px solid rgba(180, 83, 9, 0.15);
 }
 
 .spinner {
@@ -224,7 +225,7 @@ async function handleLogin() {
   width: 14px;
   height: 14px;
   border: 2px solid rgba(255,255,255,0.3);
-  border-top-color: #fff;
+  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }

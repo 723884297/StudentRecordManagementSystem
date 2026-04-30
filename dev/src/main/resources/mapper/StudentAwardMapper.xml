@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.StudentAwardMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.StudentAward">
+        <id column="pk_award" property="pkAward"/>
+        <result column="student_id" property="studentId"/>
+        <result column="award_name" property="awardName"/>
+        <result column="award_level" property="awardLevel"/>
+        <result column="award_date" property="awardDate"/>
+        <result column="issuing_authority" property="issuingAuthority"/>
+        <result column="description" property="description"/>
+        <result column="import_user_id" property="importUserId"/>
+        <result column="import_time" property="importTime"/>
+    </resultMap>
+
+    <resultMap id="ExtResultMap" type="com.student.archive.entity.StudentAward" extends="BaseResultMap">
+        <result column="student_name" property="studentName"/>
+        <result column="student_no" property="studentNo"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM student_award WHERE pk_award = #{pkAward}
+    </select>
+
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM student_award WHERE student_id = #{studentId} ORDER BY award_date DESC
+    </select>
+
+    <select id="selectList" resultMap="ExtResultMap">
+        SELECT a.*, s.name AS student_name, s.student_no
+        FROM student_award a
+        LEFT JOIN student s ON a.student_id = s.pk_student
+        <where>
+            <if test="studentId != null">
+                AND a.student_id = #{studentId}
+            </if>
+            <if test="awardLevel != null and awardLevel != ''">
+                AND a.award_level = #{awardLevel}
+            </if>
+            <if test="awardName != null and awardName != ''">
+                AND a.award_name LIKE CONCAT('%', #{awardName}, '%')
+            </if>
+        </where>
+        ORDER BY a.award_date DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkAward">
+        INSERT INTO student_award (student_id, award_name, award_level, award_date, issuing_authority, description, import_user_id)
+        VALUES (#{studentId}, #{awardName}, #{awardLevel}, #{awardDate}, #{issuingAuthority}, #{description}, #{importUserId})
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO student_award (student_id, award_name, award_level, award_date, issuing_authority, description, import_user_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.studentId}, #{item.awardName}, #{item.awardLevel}, #{item.awardDate},
+             #{item.issuingAuthority}, #{item.description}, #{item.importUserId})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE student_award
+        <set>
+            <if test="awardName != null">award_name = #{awardName},</if>
+            <if test="awardLevel != null">award_level = #{awardLevel},</if>
+            <if test="awardDate != null">award_date = #{awardDate},</if>
+            <if test="issuingAuthority != null">issuing_authority = #{issuingAuthority},</if>
+            <if test="description != null">description = #{description},</if>
+        </set>
+        WHERE pk_award = #{pkAward}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM student_award WHERE pk_award = #{pkAward}
+    </delete>
+
+    <delete id="deleteByStudentId">
+        DELETE FROM student_award WHERE student_id = #{studentId}
+    </delete>
+</mapper>

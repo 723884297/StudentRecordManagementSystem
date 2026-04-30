@@ -18,28 +18,46 @@
         <result column="audit_remark" property="auditRemark"/>
     </resultMap>
 
-    <select id="selectById" resultMap="BaseResultMap">
-        SELECT * FROM archive_file WHERE pk_archive_file = #{pkArchiveFile}
+    <resultMap id="DetailResultMap" type="com.student.archive.entity.ArchiveFile" extends="BaseResultMap">
+        <result column="student_name" property="studentName"/>
+        <result column="student_no" property="studentNo"/>
+        <result column="category_name" property="categoryName"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="DetailResultMap">
+        SELECT af.*, s.name AS student_name, s.student_no, ac.category_name
+        FROM archive_file af
+        LEFT JOIN student s ON af.student_id = s.pk_student
+        LEFT JOIN archive_category ac ON af.category_id = ac.pk_category
+        WHERE af.pk_archive_file = #{pkArchiveFile}
     </select>
 
-    <select id="selectByStudentId" resultMap="BaseResultMap">
-        SELECT * FROM archive_file WHERE student_id = #{studentId} ORDER BY upload_time DESC
+    <select id="selectByStudentId" resultMap="DetailResultMap">
+        SELECT af.*, s.name AS student_name, s.student_no, ac.category_name
+        FROM archive_file af
+        LEFT JOIN student s ON af.student_id = s.pk_student
+        LEFT JOIN archive_category ac ON af.category_id = ac.pk_category
+        WHERE af.student_id = #{studentId}
+        ORDER BY af.upload_time DESC
     </select>
 
-    <select id="selectList" resultMap="BaseResultMap">
-        SELECT * FROM archive_file
+    <select id="selectList" resultMap="DetailResultMap">
+        SELECT af.*, s.name AS student_name, s.student_no, ac.category_name
+        FROM archive_file af
+        LEFT JOIN student s ON af.student_id = s.pk_student
+        LEFT JOIN archive_category ac ON af.category_id = ac.pk_category
         <where>
             <if test="studentId != null">
-                AND student_id = #{studentId}
+                AND af.student_id = #{studentId}
             </if>
             <if test="categoryId != null">
-                AND category_id = #{categoryId}
+                AND af.category_id = #{categoryId}
             </if>
             <if test="status != null">
-                AND status = #{status}
+                AND af.status = #{status}
             </if>
         </where>
-        ORDER BY upload_time DESC
+        ORDER BY af.upload_time DESC
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="pkArchiveFile">
@@ -76,4 +94,8 @@
     <select id="countByStatus" resultType="int">
         SELECT COUNT(*) FROM archive_file WHERE status = #{status}
     </select>
+
+    <update id="updateFilePath">
+        UPDATE archive_file SET file_path = #{filePath} WHERE pk_archive_file = #{pkArchiveFile}
+    </update>
 </mapper>

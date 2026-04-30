@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.ArchiveExportRequestMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.ArchiveExportRequest">
+        <id column="pk_request" property="pkRequest"/>
+        <result column="student_id" property="studentId"/>
+        <result column="request_type" property="requestType"/>
+        <result column="reason" property="reason"/>
+        <result column="status" property="status"/>
+        <result column="audit_user_id" property="auditUserId"/>
+        <result column="audit_time" property="auditTime"/>
+        <result column="audit_remark" property="auditRemark"/>
+        <result column="expire_time" property="expireTime"/>
+        <result column="create_time" property="createTime"/>
+        <result column="student_name" property="studentName"/>
+        <result column="student_no" property="studentNo"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT r.*, s.name AS student_name, s.student_no
+        FROM archive_export_request r
+        LEFT JOIN student s ON r.student_id = s.pk_student
+        WHERE r.pk_request = #{pkRequest}
+    </select>
+
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM archive_export_request
+        WHERE student_id = #{studentId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectList" resultMap="BaseResultMap">
+        SELECT r.*, s.name AS student_name, s.student_no
+        FROM archive_export_request r
+        LEFT JOIN student s ON r.student_id = s.pk_student
+        <where>
+            <if test="studentId != null">
+                AND r.student_id = #{studentId}
+            </if>
+            <if test="status != null">
+                AND r.status = #{status}
+            </if>
+        </where>
+        ORDER BY r.create_time DESC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkRequest">
+        INSERT INTO archive_export_request (student_id, request_type, reason, status)
+        VALUES (#{studentId}, #{requestType}, #{reason}, 0)
+    </insert>
+
+    <update id="updateAudit">
+        UPDATE archive_export_request
+        SET status = #{status},
+            audit_user_id = #{auditUserId},
+            audit_time = NOW(),
+            audit_remark = #{auditRemark},
+            expire_time = CASE WHEN #{status} = 1 THEN DATE_ADD(NOW(), INTERVAL 24 HOUR) ELSE NULL END
+        WHERE pk_request = #{pkRequest}
+    </update>
+
+    <select id="selectValidApproved" resultMap="BaseResultMap">
+        SELECT * FROM archive_export_request
+        WHERE student_id = #{studentId}
+          AND status = 1
+          AND expire_time > NOW()
+        ORDER BY expire_time DESC
+    </select>
+
+</mapper>

@@ -28,8 +28,19 @@
         SELECT * FROM student WHERE student_no = #{studentNo}
     </select>
 
-    <select id="selectByUserId" resultMap="BaseResultMap">
-        SELECT * FROM student WHERE user_id = #{userId}
+    <resultMap id="DetailResultMap" type="com.student.archive.entity.Student" extends="BaseResultMap">
+        <result column="college_name" property="collegeName"/>
+        <result column="major_name" property="majorName"/>
+        <result column="class_name" property="className"/>
+    </resultMap>
+
+    <select id="selectByUserId" resultMap="DetailResultMap">
+        SELECT s.*, c.college_name, m.major_name, ci.class_name
+        FROM student s
+        LEFT JOIN college c ON s.college_id = c.pk_college
+        LEFT JOIN major m ON s.major_id = m.pk_major
+        LEFT JOIN class_info ci ON s.class_id = ci.pk_class
+        WHERE s.user_id = #{userId}
     </select>
 
     <select id="selectList" resultMap="BaseResultMap">

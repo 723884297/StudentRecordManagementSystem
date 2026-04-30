@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.student.archive.mapper.StudentGradeMapper">
+
+    <resultMap id="BaseResultMap" type="com.student.archive.entity.StudentGrade">
+        <id column="pk_grade" property="pkGrade"/>
+        <result column="student_id" property="studentId"/>
+        <result column="semester" property="semester"/>
+        <result column="course_name" property="courseName"/>
+        <result column="course_type" property="courseType"/>
+        <result column="credit" property="credit"/>
+        <result column="score" property="score"/>
+        <result column="gpa" property="gpa"/>
+        <result column="import_user_id" property="importUserId"/>
+        <result column="import_time" property="importTime"/>
+    </resultMap>
+
+    <resultMap id="ExtResultMap" type="com.student.archive.entity.StudentGrade" extends="BaseResultMap">
+        <result column="student_name" property="studentName"/>
+        <result column="student_no" property="studentNo"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM student_grade WHERE pk_grade = #{pkGrade}
+    </select>
+
+    <select id="selectByStudentId" resultMap="BaseResultMap">
+        SELECT * FROM student_grade WHERE student_id = #{studentId} ORDER BY semester DESC, course_name ASC
+    </select>
+
+    <select id="selectList" resultMap="ExtResultMap">
+        SELECT g.*, s.name AS student_name, s.student_no
+        FROM student_grade g
+        LEFT JOIN student s ON g.student_id = s.pk_student
+        <where>
+            <if test="studentId != null">
+                AND g.student_id = #{studentId}
+            </if>
+            <if test="semester != null and semester != ''">
+                AND g.semester = #{semester}
+            </if>
+            <if test="courseName != null and courseName != ''">
+                AND g.course_name LIKE CONCAT('%', #{courseName}, '%')
+            </if>
+        </where>
+        ORDER BY g.semester DESC, g.course_name ASC
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="pkGrade">
+        INSERT INTO student_grade (student_id, semester, course_name, course_type, credit, score, gpa, import_user_id)
+        VALUES (#{studentId}, #{semester}, #{courseName}, #{courseType}, #{credit}, #{score}, #{gpa}, #{importUserId})
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO student_grade (student_id, semester, course_name, course_type, credit, score, gpa, import_user_id)
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.studentId}, #{item.semester}, #{item.courseName}, #{item.courseType},
+             #{item.credit}, #{item.score}, #{item.gpa}, #{item.importUserId})
+        </foreach>
+    </insert>
+
+    <update id="update">
+        UPDATE student_grade
+        <set>
+            <if test="semester != null">semester = #{semester},</if>
+            <if test="courseName != null">course_name = #{courseName},</if>
+            <if test="courseType != null">course_type = #{courseType},</if>
+            <if test="credit != null">credit = #{credit},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="gpa != null">gpa = #{gpa},</if>
+        </set>
+        WHERE pk_grade = #{pkGrade}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM student_grade WHERE pk_grade = #{pkGrade}
+    </delete>
+
+    <delete id="deleteByStudentId">
+        DELETE FROM student_grade WHERE student_id = #{studentId}
+    </delete>
+</mapper>

@@ -97,8 +97,18 @@ export const archiveApi = {
   getFilesByStudentId: (studentId: number) => api.get(`/archive/file/student/${studentId}`),
   getFileList: (params: any) => api.get('/archive/file/list', { params }),
   addFile: (data: any) => api.post('/archive/file', data),
+  uploadFile: (formData: FormData) => api.post('/archive/file/upload', formData, {
+    timeout: 60000
+  }),
   deleteFile: (id: number) => api.delete(`/archive/file/${id}`),
   auditFile: (id: number, params: any) => api.put(`/archive/file/${id}/audit`, null, { params }),
+  // 导出申请
+  submitExportRequest: (data: any) => api.post('/archive/export-request', data),
+  getExportRequestById: (id: number) => api.get(`/archive/export-request/${id}`),
+  getExportRequestsByStudentId: (studentId: number) => api.get(`/archive/export-request/student/${studentId}`),
+  getExportRequestList: (params: any) => api.get('/archive/export-request/list', { params }),
+  auditExportRequest: (id: number, params: any) => api.put(`/archive/export-request/${id}/audit`, null, { params }),
+  getValidApprovedRequest: (params: any) => api.get('/archive/export-request/valid', { params }),
 }
 
 // ===== 通知管理 =====

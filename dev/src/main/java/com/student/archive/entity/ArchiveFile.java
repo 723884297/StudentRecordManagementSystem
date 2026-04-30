@@ -23,4 +23,9 @@ public class ArchiveFile {
     private Long auditUserId;
     private LocalDateTime auditTime;
     private String auditRemark;
+
+    // 关联字段（非DB字段，JOIN查询填充）
+    private String studentName;
+    private String studentNo;
+    private String categoryName;
 }

@@ -28,4 +28,6 @@ public interface ArchiveFileMapper {
     int countTotal();
 
     int countByStatus(@Param("status") Integer status);
+
+    int updateFilePath(@Param("pkArchiveFile") Long pkArchiveFile, @Param("filePath") String filePath);
 }

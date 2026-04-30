@@ -307,5 +307,5 @@ onMounted(() => {
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .empty-cell { text-align: center; padding: 40px !important; color: var(--text-quaternary); font-size: 13px; }
 .pagination-info { font-size: 13px; color: var(--text-tertiary); padding: 0 8px; }
-.required { color: #ef4444; }
+.required { color: var(--status-red); }
 </style>

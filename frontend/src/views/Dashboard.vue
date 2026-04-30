@@ -147,10 +147,11 @@ onMounted(async () => {
 }
 
 .stat-card {
-  background: var(--surface-02);
+  background: var(--bg-panel);
   border: 1px solid var(--border-standard);
   border-radius: var(--radius-card);
   padding: 20px;
+  box-shadow: var(--shadow-subtle);
 }
 
 .stat-value {

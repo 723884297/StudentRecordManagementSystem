@@ -1,0 +1,21 @@
+# Maven build output
+**/target/
+
+# IDE
+.idea/
+*.iml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Uploads temp
+uploads/
+
+# Node
+node_modules/
+dist/
+
+# Environment
+*.env
+*.env.local

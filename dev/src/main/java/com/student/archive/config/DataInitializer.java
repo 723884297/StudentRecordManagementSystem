@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
  * 同时确保默认角色存在，并为学生用户自动分配 student 角色
  */
 @Slf4j
-@Component
+// @Component  // 测试数据已通过 test_data.sql 导入，不再需要启动时自动初始化
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 

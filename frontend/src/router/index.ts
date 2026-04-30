@@ -110,6 +110,12 @@ const router = createRouter({
           meta: { title: '奖项导入', roles: ['counselor', 'archive_manager'] }
         },
         {
+          path: 'export-audit',
+          name: 'TeacherExportAudit',
+          component: () => import('../views/teacher/TeacherExportAudit.vue'),
+          meta: { title: '导出申请审核', roles: ['counselor', 'archive_manager'] }
+        },
+        {
           path: 'notifications',
           name: 'TeacherNotifications',
           component: () => import('../views/NotificationList.vue'),
@@ -147,6 +153,18 @@ const router = createRouter({
           name: 'StudentAwards',
           component: () => import('../views/student/StudentAwards.vue'),
           meta: { title: '奖项档案', roles: ['student'] }
+        },
+        {
+          path: 'archive-apply',
+          name: 'StudentArchiveApply',
+          component: () => import('../views/student/StudentArchiveApply.vue'),
+          meta: { title: '档案申请', roles: ['student'] }
+        },
+        {
+          path: 'archive-upload',
+          name: 'StudentArchiveUpload',
+          component: () => import('../views/student/StudentArchiveUpload.vue'),
+          meta: { title: '材料上传', roles: ['student'] }
         },
         {
           path: 'archive-history',

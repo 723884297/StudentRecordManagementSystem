@@ -21,9 +21,9 @@ spring:
   # 数据源配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://112.125.121.32:3306/StudentRecordManagementSystem?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: root
-    password: root
+    url: ${DB_URL:jdbc:mysql://localhost:3306/StudentRecordManagementSystem?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
     hikari:
       minimum-idle: 5
       maximum-pool-size: 20
@@ -34,9 +34,9 @@ spring:
   # Redis配置
   data:
     redis:
-      host: 112.125.121.32
-      port: 6379
-      password: root
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:root}
       database: 3
       timeout: 5000ms
       lettuce:
@@ -67,7 +67,18 @@ jwt:
 
 # 文件存储路径
 file:
-  upload-path: /data/student-archive/uploads/
+  upload-path: ./uploads/
+
+# 阿里云 OSS 配置
+oss:
+  region: cn-beijing
+  bucket: luce5in3-buket
+  endpoint: https://oss-cn-beijing.aliyuncs.com
+  base-url: https://luce5in3-buket.oss-cn-beijing.aliyuncs.com
+  prefix-archive: Archivefiles/
+  prefix-image: SRMS_Image/
+  access-key-id: ${OSS_ACCESS_KEY_ID:}
+  access-key-secret: ${OSS_ACCESS_KEY_SECRET:}
 
 # 日志配置
 logging:
