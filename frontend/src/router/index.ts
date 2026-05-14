@@ -69,6 +69,12 @@ const router = createRouter({
           name: 'Notifications',
           component: () => import('../views/NotificationList.vue'),
           meta: { title: '通知中心', roles: ['admin'] }
+        },
+        {
+          path: 'operation-logs',
+          name: 'OperationLogs',
+          component: () => import('../views/OperationLogList.vue'),
+          meta: { title: '操作日志', roles: ['admin'] }
         }
       ]
     },
@@ -127,9 +133,15 @@ const router = createRouter({
     {
       path: '/student',
       component: () => import('../layout/AppLayout.vue'),
-      redirect: '/student/profile',
+      redirect: '/student/dashboard',
       meta: { roles: ['student'] },
       children: [
+        {
+          path: 'dashboard',
+          name: 'StudentDashboard',
+          component: () => import('../views/student/StudentDashboard.vue'),
+          meta: { title: '我的主页', roles: ['student'] }
+        },
         {
           path: 'profile',
           name: 'StudentProfile',
@@ -227,7 +239,7 @@ router.beforeEach((to) => {
       if (!hasPermission) {
         // 重定向到对应角色的首页（防止循环跳转）
         if (userRoles.includes('student') && !to.path.startsWith('/student')) {
-          return '/student/profile'
+          return '/student/dashboard'
         } else if ((userRoles.includes('counselor') || userRoles.includes('archive_manager')) && !to.path.startsWith('/teacher')) {
           return '/teacher/dashboard'
         } else if (userRoles.includes('admin') && to.path.startsWith('/student') || to.path.startsWith('/teacher')) {

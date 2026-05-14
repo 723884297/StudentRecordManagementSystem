@@ -140,3 +140,8 @@ export const awardApi = {
   update: (data: any) => api.put('/award', data),
   delete: (id: number) => api.delete(`/award/${id}`),
 }
+
+// ===== 操作日志 =====
+export const operationLogApi = {
+  getList: (params: any) => api.get('/operation-log/list', { params }),
+}

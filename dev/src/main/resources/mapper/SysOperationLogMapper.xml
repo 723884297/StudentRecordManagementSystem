@@ -41,4 +41,38 @@
         ORDER BY l.create_time DESC
         LIMIT #{limit}
     </select>
+
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT l.*, u.real_name AS user_name
+        FROM sys_operation_log l
+        LEFT JOIN sys_user u ON l.user_id = u.pk_user
+        <where>
+            <if test="userId != null">
+                AND l.user_id = #{userId}
+            </if>
+            <if test="module != null and module != ''">
+                AND l.module LIKE CONCAT('%', #{module}, '%')
+            </if>
+            <if test="operation != null and operation != ''">
+                AND l.operation LIKE CONCAT('%', #{operation}, '%')
+            </if>
+        </where>
+        ORDER BY l.create_time DESC
+        LIMIT #{offset}, #{pageSize}
+    </select>
+
+    <select id="countPage" resultType="int">
+        SELECT COUNT(*) FROM sys_operation_log l
+        <where>
+            <if test="userId != null">
+                AND l.user_id = #{userId}
+            </if>
+            <if test="module != null and module != ''">
+                AND l.module LIKE CONCAT('%', #{module}, '%')
+            </if>
+            <if test="operation != null and operation != ''">
+                AND l.operation LIKE CONCAT('%', #{operation}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

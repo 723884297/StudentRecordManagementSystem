@@ -15,4 +15,11 @@ public interface SysOperationLogMapper {
     int insert(SysOperationLog log);
 
     List<SysOperationLog> selectRecent(@Param("limit") int limit);
+
+    List<SysOperationLog> selectPage(@Param("userId") Long userId, @Param("module") String module,
+                                     @Param("operation") String operation,
+                                     @Param("offset") int offset, @Param("pageSize") int pageSize);
+
+    int countPage(@Param("userId") Long userId, @Param("module") String module,
+                  @Param("operation") String operation);
 }
