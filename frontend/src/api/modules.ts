@@ -100,6 +100,7 @@ export const archiveApi = {
   uploadFile: (formData: FormData) => api.post('/archive/file/upload', formData, {
     timeout: 60000
   }),
+  previewFile: (id: number) => api.get(`/archive/file/${id}/preview`, { responseType: 'blob' }),
   deleteFile: (id: number) => api.delete(`/archive/file/${id}`),
   auditFile: (id: number, params: any) => api.put(`/archive/file/${id}/audit`, null, { params }),
   // 导出申请

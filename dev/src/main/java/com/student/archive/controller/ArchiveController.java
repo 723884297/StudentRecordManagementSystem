@@ -1,5 +1,6 @@
 package com.student.archive.controller;
 
+import com.aliyun.oss.model.OSSObject;
 import com.student.archive.common.PageResult;
 import com.student.archive.common.Result;
 import com.student.archive.entity.ArchiveCategory;
@@ -9,11 +10,19 @@ import com.student.archive.service.ArchiveService;
 import com.student.archive.service.OssService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
@@ -125,6 +134,59 @@ public class ArchiveController {
     public Result<Void> deleteFile(@PathVariable("id") Long id) {
         archiveService.deleteFile(id);
         return Result.success();
+    }
+
+    /**
+     * 预览/下载档案文件，兼容本地临时文件与OSS文件
+     */
+    @GetMapping("/file/{id}/preview")
+    public ResponseEntity<InputStreamResource> previewFile(@PathVariable("id") Long id) throws IOException {
+        ArchiveFile archiveFile = archiveService.getFileById(id);
+        if (archiveFile == null || archiveFile.getFilePath() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String filePath = archiveFile.getFilePath();
+        String fileName = archiveFile.getFileName() != null ? archiveFile.getFileName() : "file";
+        String contentType = guessContentType(fileName);
+
+        InputStream inputStream;
+        long contentLength;
+
+        if (filePath.startsWith("http://") || filePath.startsWith("https://")) {
+            OSSObject ossObject = ossService.getObject(filePath);
+            inputStream = ossObject.getObjectContent();
+            contentLength = ossObject.getObjectMetadata().getContentLength();
+        } else {
+            File localFile = new File(filePath);
+            if (!localFile.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+            inputStream = new FileInputStream(localFile);
+            contentLength = localFile.length();
+        }
+
+        String encoded = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .contentLength(contentLength)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename*=UTF-8''" + encoded)
+                .body(new InputStreamResource(inputStream));
+    }
+
+    private String guessContentType(String fileName) {
+        if (fileName == null) return "application/octet-stream";
+        String n = fileName.toLowerCase();
+        if (n.endsWith(".pdf")) return "application/pdf";
+        if (n.endsWith(".png")) return "image/png";
+        if (n.endsWith(".jpg") || n.endsWith(".jpeg")) return "image/jpeg";
+        if (n.endsWith(".gif")) return "image/gif";
+        if (n.endsWith(".webp")) return "image/webp";
+        if (n.endsWith(".bmp")) return "image/bmp";
+        if (n.endsWith(".svg")) return "image/svg+xml";
+        if (n.endsWith(".txt") || n.endsWith(".log") || n.endsWith(".md")) return "text/plain;charset=UTF-8";
+        if (n.endsWith(".html") || n.endsWith(".htm")) return "text/html;charset=UTF-8";
+        if (n.endsWith(".json")) return "application/json";
+        return "application/octet-stream";
     }
 
     @PutMapping("/file/{id}/audit")

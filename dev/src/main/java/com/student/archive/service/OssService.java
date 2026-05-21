@@ -1,6 +1,7 @@
 package com.student.archive.service;
 
 import com.aliyun.oss.OSS;
+import com.aliyun.oss.model.OSSObject;
 import com.student.archive.config.OssConfig;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,14 @@ public class OssService {
             log.error("OSS上传失败: {}", e.getMessage(), e);
             throw new RuntimeException("文件上传OSS失败: " + e.getMessage());
         }
+    }
+
+    /**
+     * 从OSS下载文件对象（用于服务端流式预览/下载）
+     */
+    public OSSObject getObject(String fileUrl) {
+        String objectKey = fileUrl.replace(ossConfig.getBaseUrl() + "/", "");
+        return ossClient.getObject(ossConfig.getBucket(), objectKey);
     }
 
     /**

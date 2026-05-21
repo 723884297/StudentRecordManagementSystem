@@ -20,6 +20,11 @@ api.interceptors.request.use(config => {
 
 api.interceptors.response.use(
   response => {
+    // 二进制响应（文件预览/下载）跳过业务 code 检查，直接返回原始响应
+    const respType = (response.config as any).responseType
+    if (respType === 'blob' || respType === 'arraybuffer') {
+      return response
+    }
     const res = response.data
     if (res.code !== 200) {
       const err: any = new Error(res.message || '请求失败')

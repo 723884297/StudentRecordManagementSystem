@@ -274,6 +274,25 @@ CREATE TABLE `notification` (
   KEY `idx_notif_sender` (`sender_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通知提醒表';
 
+-- 15. 档案导出申请表
+DROP TABLE IF EXISTS `archive_export_request`;
+CREATE TABLE `archive_export_request` (
+  `pk_request`     BIGINT       NOT NULL AUTO_INCREMENT COMMENT '申请ID',
+  `student_id`     BIGINT       NOT NULL COMMENT '学生ID → student.pk_student',
+  `request_type`   VARCHAR(50)  DEFAULT NULL COMMENT '申请类型，如：档案打印、档案下载',
+  `reason`         VARCHAR(500) DEFAULT NULL COMMENT '申请原因',
+  `status`         TINYINT      DEFAULT 0 COMMENT '审核状态：0-待审核 1-已通过 2-已驳回',
+  `audit_user_id`  BIGINT       DEFAULT NULL COMMENT '审核人ID → sys_user.pk_user',
+  `audit_time`     DATETIME     DEFAULT NULL COMMENT '审核时间',
+  `audit_remark`   VARCHAR(500) DEFAULT NULL COMMENT '审核备注',
+  `expire_time`    DATETIME     DEFAULT NULL COMMENT '审核通过后授权有效期（默认24小时）',
+  `create_time`    DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '申请时间',
+  PRIMARY KEY (`pk_request`),
+  KEY `idx_export_student` (`student_id`),
+  KEY `idx_export_status` (`status`),
+  KEY `idx_export_audit_user` (`audit_user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='档案导出申请表';
+
 -- =============================================
 -- 六、初始数据
 -- =============================================
