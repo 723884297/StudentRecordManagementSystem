@@ -6,13 +6,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * 学生奖项表
+ * 学生奖惩表
  */
 @Data
 public class StudentAward {
 
     private Long pkAward;
     private Long studentId;
+    private String type;  // award-奖励, punishment-处分
     private String awardName;
     private String awardLevel;
     private LocalDate awardDate;

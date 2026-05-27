@@ -20,9 +20,21 @@
         ORDER BY create_time DESC
     </select>
 
+    <select id="selectBySenderId" resultMap="BaseResultMap">
+        SELECT * FROM notification WHERE sender_id = #{senderId}
+        ORDER BY create_time DESC
+    </select>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="pkNotification">
         INSERT INTO notification (target_user_id, sender_id, title, content)
         VALUES (#{targetUserId}, #{senderId}, #{title}, #{content})
+    </insert>
+
+    <insert id="batchInsert">
+        INSERT INTO notification (target_user_id, sender_id, title, content) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (#{item.targetUserId}, #{item.senderId}, #{item.title}, #{item.content})
+        </foreach>
     </insert>
 
     <update id="markAsRead">

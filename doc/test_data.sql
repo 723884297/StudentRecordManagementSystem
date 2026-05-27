@@ -250,6 +250,16 @@ INSERT INTO `student_award` (`student_id`, `award_name`, `award_level`, `award_d
   (7, '校级优秀志愿者',                      '校级',   '2025-03-05', '校团委',                   '累计志愿服务时长超200小时',   3);
 
 -- =============================================
+-- 处分数据
+-- =============================================
+
+INSERT INTO `student_award` (`student_id`, `type`, `award_name`, `award_level`, `award_date`, `issuing_authority`, `description`, `import_user_id`) VALUES
+  (4, 'punishment', '旷课',               '警告',       '2024-12-10', '计算机科学与技术学院', '累计旷课3次',             2),
+  (5, 'punishment', '考试作弊',           '记过',       '2025-03-20', '学校教务处',           '期末考试携带小抄',         3),
+  (7, 'punishment', '宿舍违规用电',       '警告',       '2025-01-05', '学生工作处',           '在宿舍使用大功率电器',     3),
+  (5, 'punishment', '学术不端',           '严重警告',   '2025-06-01', '计算机科学与技术学院', '作业抄袭情节较轻',         3);
+
+-- =============================================
 -- 九、通知数据（模拟系统通知）
 -- =============================================
 INSERT INTO `notification` (`target_user_id`, `sender_id`, `title`, `content`, `is_read`) VALUES

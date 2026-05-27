@@ -68,7 +68,19 @@ const router = createRouter({
           path: 'notifications',
           name: 'Notifications',
           component: () => import('../views/NotificationList.vue'),
-          meta: { title: '通知中心', roles: ['admin'] }
+          meta: { title: '通知查看', roles: ['admin'] }
+        },
+        {
+          path: 'notification-send',
+          name: 'NotificationSend',
+          component: () => import('../views/NotificationSend.vue'),
+          meta: { title: '发布通知', roles: ['admin'] }
+        },
+        {
+          path: 'export-audit',
+          name: 'AdminExportAudit',
+          component: () => import('../views/teacher/TeacherExportAudit.vue'),
+          meta: { title: '导出审核', roles: ['admin'] }
         },
         {
           path: 'operation-logs',
@@ -113,7 +125,7 @@ const router = createRouter({
           path: 'awards',
           name: 'TeacherAwards',
           component: () => import('../views/teacher/TeacherAwardImport.vue'),
-          meta: { title: '奖项导入', roles: ['counselor', 'archive_manager'] }
+          meta: { title: '奖惩导入', roles: ['counselor', 'archive_manager'] }
         },
         {
           path: 'export-audit',
@@ -125,7 +137,13 @@ const router = createRouter({
           path: 'notifications',
           name: 'TeacherNotifications',
           component: () => import('../views/NotificationList.vue'),
-          meta: { title: '通知中心', roles: ['counselor', 'archive_manager'] }
+          meta: { title: '通知查看', roles: ['counselor', 'archive_manager'] }
+        },
+        {
+          path: 'notification-send',
+          name: 'TeacherNotificationSend',
+          component: () => import('../views/NotificationSend.vue'),
+          meta: { title: '发布通知', roles: ['counselor', 'archive_manager'] }
         }
       ]
     },
@@ -164,7 +182,7 @@ const router = createRouter({
           path: 'awards',
           name: 'StudentAwards',
           component: () => import('../views/student/StudentAwards.vue'),
-          meta: { title: '奖项档案', roles: ['student'] }
+          meta: { title: '奖惩档案', roles: ['student'] }
         },
         {
           path: 'archive-apply',

@@ -11,7 +11,11 @@ public interface NotificationMapper {
 
     List<Notification> selectByTargetUserId(@Param("targetUserId") Long targetUserId, @Param("isRead") Integer isRead);
 
+    List<Notification> selectBySenderId(@Param("senderId") Long senderId);
+
     int insert(Notification notification);
+
+    int batchInsert(@Param("list") List<Notification> list);
 
     int markAsRead(@Param("pkNotification") Long pkNotification);
 

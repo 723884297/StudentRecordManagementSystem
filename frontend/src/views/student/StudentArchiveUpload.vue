@@ -37,8 +37,7 @@
               <td class="text-caption">{{ item.auditRemark || '-' }}</td>
               <td>
                 <div class="flex gap-4">
-                  <a v-if="item.status === 1 && item.filePath && item.filePath.startsWith('http')"
-                     :href="item.filePath" target="_blank" class="btn btn-subtle btn-sm">查看</a>
+                  <button class="btn btn-subtle btn-sm" @click="openPreview(item)">预览</button>
                   <button v-if="item.status === 0" class="btn btn-danger btn-sm" @click="handleDelete(item)">撤回</button>
                 </div>
               </td>
@@ -48,6 +47,47 @@
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- 文件预览弹窗 -->
+    <div v-if="showPreviewModal" class="modal-overlay" @click.self="closePreview">
+      <div class="modal-content preview-modal">
+        <div class="modal-header">
+          <h3 class="modal-title">档案预览 · {{ previewItem?.fileName }}</h3>
+          <button class="btn-icon" @click="closePreview">✕</button>
+        </div>
+        <div class="modal-body preview-body">
+          <div class="preview-meta">
+            <span class="meta-item">分类：{{ previewItem?.categoryName || '-' }}</span>
+            <span class="meta-item">大小：{{ formatSize(previewItem?.fileSize) }}</span>
+            <span class="meta-item">状态：<span :class="['badge', statusBadge(previewItem?.status)]">{{ statusLabel(previewItem?.status) }}</span></span>
+            <span class="meta-item" v-if="previewItem?.description">说明：{{ previewItem.description }}</span>
+          </div>
+          <div class="preview-viewer">
+            <div v-if="previewLoading" class="preview-tip">加载中...</div>
+            <div v-else-if="previewError" class="preview-tip preview-error">{{ previewError }}</div>
+            <template v-else-if="previewKind === 'image'">
+              <img :src="previewBlobUrl" :alt="previewItem?.fileName" class="preview-image" />
+            </template>
+            <template v-else-if="previewKind === 'pdf'">
+              <iframe :src="previewBlobUrl" class="preview-iframe"></iframe>
+            </template>
+            <template v-else-if="previewKind === 'text'">
+              <pre class="preview-text">{{ previewText }}</pre>
+            </template>
+            <template v-else>
+              <div class="preview-tip">
+                <p>该文件类型暂不支持在线预览（{{ previewExt || '未知' }}）</p>
+                <button class="btn btn-primary btn-sm" @click="downloadPreview">下载查看</button>
+              </div>
+            </template>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button v-if="previewBlobUrl" class="btn btn-subtle btn-sm" @click="downloadPreview">下载</button>
+          <button class="btn btn-ghost btn-sm" @click="closePreview">关闭</button>
+        </div>
       </div>
     </div>
 
@@ -120,6 +160,16 @@ const uploading = ref(false)
 const selectedFile = ref<File | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
 const uploadForm = ref({ categoryId: '', description: '' })
+
+// 预览弹窗状态
+const showPreviewModal = ref(false)
+const previewItem = ref<any>(null)
+const previewBlobUrl = ref('')
+const previewKind = ref<'image' | 'pdf' | 'text' | 'other' | ''>('')
+const previewExt = ref('')
+const previewText = ref('')
+const previewLoading = ref(false)
+const previewError = ref('')
 
 onMounted(async () => {
   await loadStudentInfo()
@@ -230,6 +280,65 @@ function formatDate(dateStr: string) {
   if (!dateStr) return '-'
   return new Date(dateStr).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' })
 }
+
+// 预览相关
+function getExt(name: string): string {
+  if (!name) return ''
+  const idx = name.lastIndexOf('.')
+  return idx >= 0 ? name.substring(idx + 1).toLowerCase() : ''
+}
+
+function kindOf(ext: string): 'image' | 'pdf' | 'text' | 'other' {
+  if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg'].includes(ext)) return 'image'
+  if (ext === 'pdf') return 'pdf'
+  if (['txt', 'log', 'md', 'json', 'csv', 'xml', 'html', 'htm'].includes(ext)) return 'text'
+  return 'other'
+}
+
+async function openPreview(item: any) {
+  previewItem.value = item
+  showPreviewModal.value = true
+  previewLoading.value = true
+  previewError.value = ''
+  previewBlobUrl.value = ''
+  previewText.value = ''
+  const ext = getExt(item.fileName)
+  previewExt.value = ext
+  previewKind.value = kindOf(ext)
+  try {
+    const res: any = await archiveApi.previewFile(item.pkArchiveFile)
+    const blob: Blob = res.data
+    previewBlobUrl.value = URL.createObjectURL(blob)
+    if (previewKind.value === 'text') {
+      previewText.value = await blob.text()
+    }
+  } catch (e: any) {
+    previewError.value = e?.message || '预览加载失败'
+  } finally {
+    previewLoading.value = false
+  }
+}
+
+function closePreview() {
+  showPreviewModal.value = false
+  if (previewBlobUrl.value) {
+    URL.revokeObjectURL(previewBlobUrl.value)
+  }
+  previewBlobUrl.value = ''
+  previewText.value = ''
+  previewItem.value = null
+  previewKind.value = ''
+  previewExt.value = ''
+  previewError.value = ''
+}
+
+function downloadPreview() {
+  if (!previewBlobUrl.value || !previewItem.value) return
+  const a = document.createElement('a')
+  a.href = previewBlobUrl.value
+  a.download = previewItem.value.fileName || 'archive-file'
+  a.click()
+}
 </script>
 
 <style scoped>
@@ -260,4 +369,16 @@ function formatDate(dateStr: string) {
 .file-info {
   display: flex; flex-direction: column; gap: 2px; min-width: 0;
 }
+
+/* 预览弹窗样式 */
+.preview-modal { max-width: 880px; width: 90vw; }
+.preview-body { display: flex; flex-direction: column; gap: 12px; }
+.preview-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 8px 12px; background: var(--surface-03); border-radius: var(--radius-md); font-size: 12px; color: var(--text-tertiary); }
+.preview-meta .meta-item { display: inline-flex; align-items: center; gap: 4px; }
+.preview-viewer { min-height: 360px; max-height: 65vh; display: flex; align-items: center; justify-content: center; background: var(--surface-02); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); overflow: hidden; }
+.preview-image { max-width: 100%; max-height: 65vh; object-fit: contain; }
+.preview-iframe { width: 100%; height: 65vh; border: 0; background: #fff; }
+.preview-text { width: 100%; max-height: 65vh; overflow: auto; padding: 16px; margin: 0; font-size: 12px; color: var(--text-secondary); white-space: pre-wrap; word-break: break-all; font-family: 'SF Mono', monospace; }
+.preview-tip { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px; color: var(--text-tertiary); font-size: 13px; text-align: center; }
+.preview-error { color: var(--status-red, #c53030); }
 </style>

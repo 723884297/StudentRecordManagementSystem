@@ -29,9 +29,9 @@ public class StudentAwardServiceImpl implements StudentAwardService {
     }
 
     @Override
-    public PageResult<StudentAward> getList(int pageNum, int pageSize, Long studentId, String awardLevel, String awardName) {
+    public PageResult<StudentAward> getList(int pageNum, int pageSize, Long studentId, String awardLevel, String awardName, String type) {
         PageHelper.startPage(pageNum, pageSize);
-        List<StudentAward> list = studentAwardMapper.selectList(studentId, awardLevel, awardName);
+        List<StudentAward> list = studentAwardMapper.selectList(studentId, awardLevel, awardName, type);
         PageInfo<StudentAward> pageInfo = new PageInfo<>(list);
         return new PageResult<>(pageInfo.getTotal(), pageNum, pageSize, pageInfo.getList());
     }

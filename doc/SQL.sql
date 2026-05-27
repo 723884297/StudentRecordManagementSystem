@@ -227,17 +227,18 @@ DROP TABLE IF EXISTS `student_award`;
 CREATE TABLE `student_award` (
   `pk_award`          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '奖项ID',
   `student_id`        BIGINT       NOT NULL COMMENT '学生ID → student.pk_student',
-  `award_name`        VARCHAR(200) NOT NULL COMMENT '奖项名称',
-  `award_level`       VARCHAR(50)  DEFAULT NULL COMMENT '奖项级别：国家级/省级/市级/校级/院级',
-  `award_date`        DATE         DEFAULT NULL COMMENT '获奖日期',
-  `issuing_authority` VARCHAR(200) DEFAULT NULL COMMENT '颁发机构',
-  `description`       VARCHAR(500) DEFAULT NULL COMMENT '奖项描述',
+  `type`              VARCHAR(20)  NOT NULL DEFAULT 'award' COMMENT '类型：award-奖励 punishment-处分',
+  `award_name`        VARCHAR(200) NOT NULL COMMENT '奖项/处分名称',
+  `award_level`       VARCHAR(50)  DEFAULT NULL COMMENT '级别：奖励-国家级/省级/市级/校级/院级，处分-警告/严重警告/记过/留校察看/开除学籍',
+  `award_date`        DATE         DEFAULT NULL COMMENT '日期',
+  `issuing_authority` VARCHAR(200) DEFAULT NULL COMMENT '颁发/处分机构',
+  `description`       VARCHAR(500) DEFAULT NULL COMMENT '描述',
   `import_user_id`    BIGINT       DEFAULT NULL COMMENT '导入人ID → sys_user.pk_user',
   `import_time`       DATETIME     DEFAULT CURRENT_TIMESTAMP COMMENT '导入时间',
   PRIMARY KEY (`pk_award`),
   KEY `idx_award_student` (`student_id`),
   KEY `idx_award_date` (`award_date`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='学生奖项表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='学生奖惩表';
 
 -- =============================================
 -- 五、运营支撑模块

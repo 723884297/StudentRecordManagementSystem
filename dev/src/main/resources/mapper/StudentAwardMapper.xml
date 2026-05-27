@@ -5,6 +5,7 @@
     <resultMap id="BaseResultMap" type="com.student.archive.entity.StudentAward">
         <id column="pk_award" property="pkAward"/>
         <result column="student_id" property="studentId"/>
+        <result column="type" property="type"/>
         <result column="award_name" property="awardName"/>
         <result column="award_level" property="awardLevel"/>
         <result column="award_date" property="awardDate"/>
@@ -41,20 +42,23 @@
             <if test="awardName != null and awardName != ''">
                 AND a.award_name LIKE CONCAT('%', #{awardName}, '%')
             </if>
+            <if test="type != null and type != ''">
+                AND a.type = #{type}
+            </if>
         </where>
         ORDER BY a.award_date DESC
     </select>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="pkAward">
-        INSERT INTO student_award (student_id, award_name, award_level, award_date, issuing_authority, description, import_user_id)
-        VALUES (#{studentId}, #{awardName}, #{awardLevel}, #{awardDate}, #{issuingAuthority}, #{description}, #{importUserId})
+        INSERT INTO student_award (student_id, type, award_name, award_level, award_date, issuing_authority, description, import_user_id)
+        VALUES (#{studentId}, #{type}, #{awardName}, #{awardLevel}, #{awardDate}, #{issuingAuthority}, #{description}, #{importUserId})
     </insert>
 
     <insert id="batchInsert">
-        INSERT INTO student_award (student_id, award_name, award_level, award_date, issuing_authority, description, import_user_id)
+        INSERT INTO student_award (student_id, type, award_name, award_level, award_date, issuing_authority, description, import_user_id)
         VALUES
         <foreach collection="list" item="item" separator=",">
-            (#{item.studentId}, #{item.awardName}, #{item.awardLevel}, #{item.awardDate},
+            (#{item.studentId}, #{item.type}, #{item.awardName}, #{item.awardLevel}, #{item.awardDate},
              #{item.issuingAuthority}, #{item.description}, #{item.importUserId})
         </foreach>
     </insert>
@@ -62,6 +66,7 @@
     <update id="update">
         UPDATE student_award
         <set>
+            <if test="type != null">type = #{type},</if>
             <if test="awardName != null">award_name = #{awardName},</if>
             <if test="awardLevel != null">award_level = #{awardLevel},</if>
             <if test="awardDate != null">award_date = #{awardDate},</if>

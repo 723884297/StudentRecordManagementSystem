@@ -11,7 +11,7 @@ public interface StudentAwardService {
 
     List<StudentAward> getByStudentId(Long studentId);
 
-    PageResult<StudentAward> getList(int pageNum, int pageSize, Long studentId, String awardLevel, String awardName);
+    PageResult<StudentAward> getList(int pageNum, int pageSize, Long studentId, String awardLevel, String awardName, String type);
 
     void add(StudentAward award);
 

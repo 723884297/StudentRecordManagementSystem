@@ -30,6 +30,7 @@
             <option value="个人信息">个人信息</option>
             <option value="档案材料">档案材料清单</option>
             <option value="成绩单">成绩单</option>
+            <option value="奖惩档案">奖惩档案</option>
             <option value="全部">全部档案</option>
           </select>
         </div>
@@ -138,6 +139,7 @@ function typeLabel(type: string): string {
     '个人信息': '个人信息',
     '档案材料': '档案材料清单',
     '成绩单': '成绩单',
+    '奖惩档案': '奖惩档案',
     '全部': '全部档案'
   }
   return map[type] || type || '-'

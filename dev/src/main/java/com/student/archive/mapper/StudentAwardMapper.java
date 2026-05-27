@@ -15,7 +15,8 @@ public interface StudentAwardMapper {
 
     List<StudentAward> selectList(@Param("studentId") Long studentId,
                                    @Param("awardLevel") String awardLevel,
-                                   @Param("awardName") String awardName);
+                                   @Param("awardName") String awardName,
+                                   @Param("type") String type);
 
     int insert(StudentAward award);
 

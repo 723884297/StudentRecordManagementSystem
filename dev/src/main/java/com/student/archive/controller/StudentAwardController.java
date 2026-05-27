@@ -31,8 +31,9 @@ public class StudentAwardController {
                                                   @RequestParam(defaultValue = "20") int pageSize,
                                                   @RequestParam(required = false) Long studentId,
                                                   @RequestParam(required = false) String awardLevel,
-                                                  @RequestParam(required = false) String awardName) {
-        return Result.success(studentAwardService.getList(pageNum, pageSize, studentId, awardLevel, awardName));
+                                                  @RequestParam(required = false) String awardName,
+                                                  @RequestParam(required = false) String type) {
+        return Result.success(studentAwardService.getList(pageNum, pageSize, studentId, awardLevel, awardName, type));
     }
 
     @PostMapping

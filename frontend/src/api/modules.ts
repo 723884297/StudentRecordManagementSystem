@@ -115,6 +115,8 @@ export const archiveApi = {
 // ===== 通知管理 =====
 export const notificationApi = {
   getList: (params: any) => api.get('/notification/list', { params }),
+  getSentList: (params: any) => api.get('/notification/sent', { params }),
+  send: (data: { title: string; content: string; senderId: number; targetUserIds: number[] }) => api.post('/notification/send', data),
   countUnread: (targetUserId: number) => api.get('/notification/unread/count', { params: { targetUserId } }),
   markAsRead: (id: number) => api.put(`/notification/${id}/read`),
   markAllAsRead: (targetUserId: number) => api.put('/notification/readAll', null, { params: { targetUserId } }),

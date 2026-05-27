@@ -27,9 +27,25 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public PageResult<Notification> getBySenderId(int pageNum, int pageSize, Long senderId) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Notification> list = notificationMapper.selectBySenderId(senderId);
+        PageInfo<Notification> pageInfo = new PageInfo<>(list);
+        return new PageResult<>(pageInfo.getTotal(), pageNum, pageSize, pageInfo.getList());
+    }
+
+    @Override
     @Transactional
     public void send(Notification notification) {
         notificationMapper.insert(notification);
+    }
+
+    @Override
+    @Transactional
+    public void batchSend(List<Notification> notifications) {
+        if (notifications != null && !notifications.isEmpty()) {
+            notificationMapper.batchInsert(notifications);
+        }
     }
 
     @Override
