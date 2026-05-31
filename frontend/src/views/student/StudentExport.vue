@@ -320,13 +320,15 @@ function exportAll() {
   }
 
   // ===== 四、奖惩档案 =====
+  const awardFiles = archives.value.filter((f: any) => f.categoryName === '奖惩记录' && f.status === 1)
   text += '┌─────────────────────────────────────┐\n'
   text += '│  四、奖惩档案                        │\n'
   text += '└─────────────────────────────────────┘\n\n'
-  if (awardRecords.length) {
+  const hasAwardRecords = awardRecords.length > 0 || awardFiles.length > 0
+  if (hasAwardRecords) {
     const awardList = awardRecords.filter((r: any) => r.type !== 'punishment')
     const punishmentList = awardRecords.filter((r: any) => r.type === 'punishment')
-    text += `  奖励总数: ${awardList.length}    处分总数: ${punishmentList.length}\n\n`
+    text += `  奖励总数: ${awardList.length}    处分总数: ${punishmentList.length}    附件材料: ${awardFiles.length}\n\n`
 
     if (awardList.length) {
       text += '  ■ 奖励记录\n'
@@ -350,6 +352,18 @@ function exportAll() {
         if (p.description) text += `    说明: ${p.description}\n`
       })
       text += '\n'
+    }
+
+    // 附件材料（上传的奖惩文件）
+    if (awardFiles.length) {
+      text += '  ■ 奖惩附件材料\n'
+      text += `  ${'-'.repeat(36)}\n`
+      awardFiles.forEach((f: any, idx: number) => {
+        text += `  ${idx + 1}. ${f.fileName}\n`
+        text += `     描述: ${f.description || '-'}\n`
+        text += `     文件URL: ${f.filePath}\n`
+        text += `     上传时间: ${f.uploadTime ? new Date(f.uploadTime).toLocaleString('zh-CN') : '-'}\n\n`
+      })
     }
   } else {
     text += '  暂无奖惩记录\n\n'
@@ -427,6 +441,77 @@ function exportTranscript() {
   text += '========================================\n'
   exportContent.value = text
   exportFileName.value = `${s.studentNo}_成绩单.txt`
+}
+
+function exportAwards() {
+  const s = student.value
+  const awardRecords = awards.value
+  // 获取「奖惩记录」分类的已审核档案文件
+  const awardFiles = archives.value.filter((f: any) => f.categoryName === '奖惩记录' && f.status === 1)
+
+  let text = '========================================\n'
+  text += '            奖 惩 档 案                \n'
+  text += '========================================\n\n'
+  text += `姓名: ${s.name}    学号: ${s.studentNo}\n`
+  text += `学院: ${s.collegeName || '-'}    专业: ${s.majorName || '-'}\n`
+  text += `班级: ${s.className || '-'}\n`
+  text += `导出时间: ${new Date().toLocaleString('zh-CN')}\n\n`
+
+  const awardList = awardRecords.filter((r: any) => r.type !== 'punishment')
+  const punishmentList = awardRecords.filter((r: any) => r.type === 'punishment')
+
+  text += `奖励记录: ${awardList.length}    处分记录: ${punishmentList.length}    附件材料: ${awardFiles.length}\n\n`
+
+  // ===== 奖励记录 =====
+  if (awardList.length) {
+    text += '┌─────────────────────────────────────┐\n'
+    text += '│  奖励记录                            │\n'
+    text += '└─────────────────────────────────────┘\n\n'
+    text += `  ${padRight('序号', 4)}${padRight('名称', 18)}${padRight('级别', 10)}${padRight('日期', 14)}${padRight('机构', 16)}\n`
+    text += `  ${'-'.repeat(36)}\n`
+    awardList.forEach((a: any, idx: number) => {
+      text += `  ${padRight(String(idx + 1), 4)}${padRight(truncate(a.awardName || '-', 16), 18)}${padRight(a.awardLevel || '-', 10)}${padRight(a.awardDate || '-', 14)}${padRight(truncate(a.issuingAuthority || '-', 14), 16)}\n`
+      if (a.description) text += `    说明: ${a.description}\n`
+    })
+    text += '\n'
+  } else {
+    text += '  暂无奖励记录\n\n'
+  }
+
+  // ===== 处分记录 =====
+  if (punishmentList.length) {
+    text += '┌─────────────────────────────────────┐\n'
+    text += '│  处分记录                            │\n'
+    text += '└─────────────────────────────────────┘\n\n'
+    text += `  ${padRight('序号', 4)}${padRight('名称', 18)}${padRight('级别', 10)}${padRight('日期', 14)}${padRight('机构', 16)}\n`
+    text += `  ${'-'.repeat(36)}\n`
+    punishmentList.forEach((p: any, idx: number) => {
+      text += `  ${padRight(String(idx + 1), 4)}${padRight(truncate(p.awardName || '-', 16), 18)}${padRight(p.awardLevel || '-', 10)}${padRight(p.awardDate || '-', 14)}${padRight(truncate(p.issuingAuthority || '-', 14), 16)}\n`
+      if (p.description) text += `    说明: ${p.description}\n`
+    })
+    text += '\n'
+  } else {
+    text += '  暂无处分记录\n\n'
+  }
+
+  // ===== 附件材料（上传的奖惩文件）=====
+  if (awardFiles.length) {
+    text += '┌─────────────────────────────────────┐\n'
+    text += '│  奖惩附件材料                        │\n'
+    text += '└─────────────────────────────────────┘\n\n'
+    awardFiles.forEach((f: any, idx: number) => {
+      text += `  ${idx + 1}. ${f.fileName}\n`
+      text += `     描述: ${f.description || '-'}\n`
+      text += `     文件URL: ${f.filePath}\n`
+      text += `     上传时间: ${f.uploadTime ? new Date(f.uploadTime).toLocaleString('zh-CN') : '-'}\n\n`
+    })
+  }
+
+  text += '========================================\n'
+  text += '          本档案仅供内部使用            \n'
+  text += '========================================\n'
+  exportContent.value = text
+  exportFileName.value = `${s.studentNo}_奖惩档案.txt`
 }
 
 function padRight(str: string, len: number): string {

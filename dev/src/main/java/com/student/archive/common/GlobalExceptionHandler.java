@@ -49,6 +49,10 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Void> handleException(Exception e, HttpServletRequest request) {
         log.error("系统异常, 请求路径: {}", request.getRequestURI(), e);
+        // 打印到控制台便于调试
+        System.err.println("=== 异常详情 ===");
+        e.printStackTrace();
+        System.err.println("================");
         return Result.error("系统繁忙，请稍后再试");
     }
 }

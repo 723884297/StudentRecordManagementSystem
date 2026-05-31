@@ -11,6 +11,8 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: Asia/Shanghai
     default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
 
   # 文件上传配置
   servlet:

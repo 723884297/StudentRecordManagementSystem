@@ -7,7 +7,7 @@
       </div>
       <div class="flex gap-8">
         <button class="btn btn-secondary" @click="openBatchModal">批量导入</button>
-        <button class="btn btn-primary" @click="openAddModal">录入记录</button>
+        <button class="btn btn-primary" @click="openAddModal">单条录入</button>
       </div>
     </div>
 
